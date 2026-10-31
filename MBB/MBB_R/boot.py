@@ -1,7 +1,6 @@
 
 # MBB (My Buoy Buddy :D) receiver
 
-
 import network
 import time
 from machine import Pin

@@ -1,15 +1,10 @@
 from fastapi import Depends
 from typing import Annotated
 from sqlmodel import SQLModel, create_engine, Session
-import config # Get PostgreSQL Serveraddress
-
-
-
-URL_DATABASE = config.URL_DATABASE # For your own use, change this
-
+import config as cfg # Get PostgreSQL Serveraddress
 
 engine= create_engine(
-    URL_DATABASE,
+    cfg.database_url,
     echo=True # Turn this off in future
 )
 
@@ -21,5 +16,3 @@ def get_session():
         yield session
 
 SessionDep = Annotated[Session, Depends(get_session)]
-
-# 

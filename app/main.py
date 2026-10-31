@@ -16,7 +16,7 @@ def on_startup():
 
 # API Key Check
 def verify_api_key(x_api_key: str = Header(...)):
-    if x_api_key != cfg.API_KEY:
+    if x_api_key != cfg.api_key:
         raise HTTPException(status_code=401, detail="Invalid API Key ;-;")
 
 # Main Page

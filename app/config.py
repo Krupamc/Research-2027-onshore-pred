@@ -1,20 +1,31 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import List
+import os
 #import env
+def get_int(name: str, default: int) -> int:
+    value = os.getenv(name)
 
-class Settings(BaseSettings):
-    APP_NAME: str = "Buoy API"
-    API_KEY: str
-    URL_DATABASE: str
+    if value is None:
+        return default
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore"
-    )
+    return int(value)
+def get_required_env(name: str):
+    env = os.getenv(name)
 
-       
-API_KEY="smth"
-URL_DATABASE = "postgresql+psycopg://buoy_user:H!ldeR$m2]@192.168.1.45:5432/buoy_db"
+    if not env:
+        raise RuntimeError(f"Missing required enviromental variable: {name}")
 
-settings = Settings()
+    return env
+
+api_key = get_required_env("API_KEY")
+
+# DB
+postgres_db = os.getenv("POSTGRES_DB", "weather")
+postgres_user = os.getenv("POSTGRES_USER", "web")
+postgres_password = get_required_env("POSTGRES_PASSWORD")
+postgres_host = os.getenv("POSTGRES_HOST", "db")
+postgres_port = get_int("POSTGRES_PORT", 5432)
+
+database_url = (
+    f"postgresql+psycopg://{postgres_user}:"
+    f"{postgres_password}@{postgres_host}:"
+    f"{postgres_port}/{postgres_db}"
+)
