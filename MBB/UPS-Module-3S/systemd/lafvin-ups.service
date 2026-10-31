@@ -1,0 +1,21 @@
+[Unit]
+Description=LAFVIN UPS Module 3S Monitor
+After=local-fs.target systemd-modules-load.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/lafvin-ups
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 /opt/lafvin-ups/ups_monitor.py --config /etc/lafvin-ups.conf
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=10
+KillSignal=SIGTERM
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,53 @@
+from machine import UART, Pin
+import onewire, ds18x20
+import time
+from time import sleep
+from micropyGPS import MicropyGPS
+
+# Instantiate the micropyGPS object
+my_gps = MicropyGPS()
+
+# water objwect
+ds_pin = machine.Pin(9)
+
+ds_sensor = ds18x20.DS18X20(onewire.OneWire(ds_pin))
+
+roms = ds_sensor.scan()
+
+print('Found DS devices: ', roms)
+
+
+# Define the UART pins and create a UART object
+gps_serial = UART(1, baudrate=9600, tx=Pin(4), rx=Pin(5))
+
+while True:
+    try:
+        # Water
+        ds_sensor.convert_temp()
+    
+        time.sleep_ms(750)
+        
+        for rom in roms:
+            print(rom)
+        
+        print(ds_sensor.read_temp(rom))
+        
+        # GPS
+        while gps_serial.any():
+            data = gps_serial.read()
+            for byte in data:
+                stat = my_gps.update(chr(byte))
+                if stat is not None:
+                    # Print parsed GPS data
+                    print('UTC Timestamp:', my_gps.timestamp)
+                    print('Date:', my_gps.date_string('long'))
+                    print('Latitude:', my_gps.latitude_string())
+                    print('Longitude:', my_gps.longitude_string())
+                    print('Altitude:', my_gps.altitude)
+                    print('Satellites in use:', my_gps.satellites_in_use)
+                    print('Horizontal Dilution of Precision:', my_gps.hdop)
+                    print()
+                    sleep(10)
+            
+    except Exception as e:
+        print(f"An error occurred: {e}")

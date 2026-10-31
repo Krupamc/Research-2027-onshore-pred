@@ -1,0 +1,8 @@
+- Need buttonless batteries
+- RTC BATTERY
+- gps fried itself - order new one
+
+- Run gps for long time and find average area and then create drifitng away logic
+- on boot check how many satelites is connected and keep connecting
+- make desktop.ini that pings server that sd card was opened/auto run script
+  - add infinite desktop gooses

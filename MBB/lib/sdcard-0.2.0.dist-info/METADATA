@@ -1,0 +1,8 @@
+Metadata-Version: 2.1
+Name: sdcard
+Version: 0.2.0
+Summary: SDCard block device driver.
+Author: 
+License: MIT
+Home-page: https://github.com/micropython/micropython-lib/tree/master/micropython
+Project-URL: Source, https://github.com/micropython/micropython-lib/tree/master/micropython/drivers/storage/sdcard
