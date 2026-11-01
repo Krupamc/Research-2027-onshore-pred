@@ -4,7 +4,7 @@
     <head>
         
         <!-- Preconnect for fonts and style -->
-        <link rel="stylesheet" href="{{ url_for('static', path='/style.css?tesdt2') }}">
+        <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -52,8 +52,22 @@
             {% endif %}
         </title>
         
+        <div id="top-menu-bar" class="top_menu_bar">
+
+            <nav class="menu_bar" aria-label="Main navigation">
+                <!-- Logo link -->
+                <a href="/" class="logo_link">
+                    <img src="{{ url_for('static', path='/icons/logo.jpg') }}" alt="logo">
+                    <p>Wind Predictions</p>
+                </a>
+
+                <div class="nav_links" id="main-nav-links"></div>
+                <a href="/research" class="nav_item {% if active_page == 'research' %}active{% endif %}">Independent Research</a>
+            </nav>
+        </div>
+        
         <!-- Other files-->
-        <div>
+        <div style="padding: 70px">
             {% block content %}
             {% endblock %}
         </div>

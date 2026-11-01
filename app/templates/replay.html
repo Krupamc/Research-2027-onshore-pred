@@ -3,21 +3,23 @@
 <div class="main_container">
     <div class="main_page">
         <h1>Forecast-Informed Drone Heading Prototype</h1>
-        <p>Historical next-hour wind forcasts and a wind-only ranking of demonstration travel headings</p>
+        <p>Historical next-hour wind forcasts iand a wind-only ranking of demonstration travel headngs</p>
         <p>Historical evalution quality is not 100%. Battery-saving, safety, and autonomous operation is not validated</p>
-        <form action="/replay" method="get">
-            <label for="sample">Historical target hour</label>
+        <form action="/replay" method="get" class="replay_form">
+            <div class="replay_field">
+                <label for="sample">Historical target hour</label>
 
-            <select id="sample" name="sample">
-                {% for option in options %}
-                <option
-                    value="{{ option.index }}"
-                    {% if option.index == sample %}selected{% endif %}
-                >
-                    {{ option.timestamp }}
-                </option>
-                {% endfor %}
-            </select>
+                <select id="sample" name="sample">
+                    {% for option in options %}
+                    <option
+                        value="{{ option.index }}"
+                        {% if option.index == sample %}selected{% endif %}
+                    >
+                        {{ option.timestamp }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
 
             <button type="submit">Load example</button>
         </form>
@@ -29,40 +31,41 @@
         </p>
 
         <h2>Wind forecast and observation</h2>
-
-        <table>
-            <thead>
-                <tr>
-                    <th scope="col">Source</th>
-                    <th scope="col">Speed (m/s)</th>
-                    <th scope="col">Direction from (degrees)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th scope="row">Ridge forecast</th>
-                    <td>{{ "%.2f"|format(forecast.speed_ms) }}</td>
-                    <td>
-                        {% if forecast.from_deg is not none %}
-                            {{ "%.1f"|format(forecast.from_deg) }}
-                        {% else %}
-                            Undefined: calm
-                        {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">Observed</th>
-                    <td>{{ "%.2f"|format(observed.speed_ms) }}</td>
-                    <td>
-                        {% if observed.from_deg is not none %}
-                            {{ "%.1f"|format(observed.from_deg) }}
-                        {% else %}
-                            Undefined: calm
-                        {% endif %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table_scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">Source</th>
+                        <th scope="col">Speed (m/s)</th>
+                        <th scope="col">Direction from (degrees)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">Ridge forecast</th>
+                        <td>{{ "%.2f"|format(forecast.speed_ms) }}</td>
+                        <td>
+                            {% if forecast.from_deg is not none %}
+                                {{ "%.1f"|format(forecast.from_deg) }}
+                            {% else %}
+                                Undefined: calm
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Observed</th>
+                        <td>{{ "%.2f"|format(observed.speed_ms) }}</td>
+                        <td>
+                            {% if observed.from_deg is not none %}
+                                {{ "%.1f"|format(observed.from_deg) }}
+                            {% else %}
+                                Undefined: calm
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
         <h2>Experimental heading ranking</h2>
 

@@ -1,7 +1,202 @@
 {% extends "layout.html" %}
+
 {% block content %}
 <div class="main_container">
     <div class="main_page">
+        <h1>Wind-Informed Water-Quality Drone Research</h1>
+
+        <p>
+            Use of Predicted Onshore Winds to Increase Autonomous
+            Water Quality Drone Battery Efficiency in Barnegat Bay
+        </p>
+
+        <p>
+            This prototype connects local wind forecasts with an
+            ranking of travel headings for a future
+            autonomous water-quality drone.
+        </p>
+        
+        <a href="/replay" class="demo_link">
+            Try the historical replay
+        </a>
+
+        <h2>What are you yapping about?</h2>
+        <p>I am predicting onshore winds using several different approaches (not finished yet) in order to predict the best direction for a water-quality drone to go in to preserve battery life.</p>
+
+        <h2>Why?</h2>
+
+        <p>
+            Onshore winds are winds that blow towards the shore and are created by the 
+            temperature delta between land and water. Warmer air over the land rises, 
+            leading to cooler, denser air over the water to replace the rising warmer air; 
+            thus causing the onshore wind. Onshore breezes influence the atmosphere of 
+            any given coastal area by cooling down a given area by around 15° Fahrenheit
+            and possibly affecting air quality and pollution levels 
+            (Habeebullaha et al., 2013;  Chen et al., 2025).
+        </p>
+        <p>
+            In Barnegat Bay, high tides 
+            bring in cold water from ocean upwelling, and low tides carry it out of the bay 
+            through the three inlets: Manasquan, Barnegat Light, and Little Egg Harbor.
+            The temperature difference between the bay and land is only exemplified and
+            can create strong gusts of onshore breezes; through Ekman transport, 
+            it can also create waves strong enough to “swamp” small watercraft, 
+            like kayaks, jet skis, and even small boats. 
+        </p>
+        <p>
+            Wind forecasts created for large areas (such as by region or by state) 
+            may generalize wind patterns over broad areas and periods, missing key 
+            factors such as sudden upwelling events or sharp land-sea temperature 
+            gradients that can form in a matter of hours. Traditional weather 
+            forecasting models at these larger scales often cannot capture the rapid, 
+            small-scale changes of Banegat Bay (Ellis, 2004; Hahn et al., 2025). 
+            Predicting these dangerous onshore gusts with high accuracy within short time frames 
+            can help anyone on the water prepare and stay safe.
+        </p>
+
+        <h2>Whats the plan?</h2>
+        <p>
+            The predecessor of this study's attempt to predict these winds was 
+            impaired by the loss of data from the NJDEP MB_01 buoy. Data was 
+            being collected hourly from several different weather stations and
+            buoys, but the NJDEP MB_01 buoy shut off and cut off data collection 
+            for the rest of the experiment, preventing the prediction models from 
+            properly training on a full data set of weather data.To account for this,
+            this project will create an open-source (publicly accessible and allows
+            for any inspections, modifications, or enhancements) buoy framework
+            that will collect water temperature and make it accessible on the
+            internet through a website. IE. I am making a buoy cause its cool :D
+        </p>
+        <p>
+            Several approaches can be taken to predict these sea breezes. 
+            However, this project will address four main ones: a model suite,
+            probabilistic models, National Weather Service predictions, 
+            and a fully mathematical approach.
+        </p>
+        
+        <h2>What does the heading score mean?</h2>
+
+        <p>
+            The score represents the component of wind opposing
+            travel along a candidate heading. A lower score means
+            less opposing wind under this simplified calculation.
+            It is not a prediction of battery consumption.
+        </p>
+
+        <p>
+            The demonstration has example bearings of
+            0, 90, 180, and 270 degrees. Multiple headings can
+            receive the same score, and their order does not
+            establish that one is better
+        </p>
+
+        <p>
+            Wind direction describes where the wind comes from.
+            Travel heading describes where the drone would move.
+            The replay keeps these separate so the forecast
+            and recommendation can be interpreted correctly.
+        </p>
+
+        <h2>Current Features?</h2>
+
+        <ul>
+            <li>
+                Uses 24 hours of prior weather observations to
+                forecast the following hour's wind components.
+            </li>
+            <li>
+                Compares persistence, Ridge regression, and an LSTM (Long-Short-Term-Memory Model).
+            </li>
+            <li>
+                Demonstrates a Ridge-based ranking of candidate
+                headings using an opposing-wind score.
+            </li>
+            <li>
+                Compares selected headings against observed wind.
+            </li>
+        </ul>
+
+        <h2>How the prototype works</h2>
+
+        <ol>
+            <li>
+                <p>
+                    Collect historical weather observations from
+                    local stations (SBB Mesonet) and convert them to consistent
+                    units.
+                </p>
+            </li>
+
+            <li>
+                <p>
+                    Aggregate observations into hourly bins and
+                    prepare windows of
+                    24 hours of weather.
+                </p>
+            </li>
+
+            <li>
+                <p>
+                    Compare persistence, Ridge regression, and
+                    a long short-term memory neural network
+                    for next-hour wind-component prediction.
+                </p>
+            </li>
+
+            <li>
+                <p>
+                    Use the Ridge forecast in the current replay
+                    to calculate an opposing-wind score for each
+                    candidate heading (where wind blows).
+                </p>
+            </li>
+
+            <li>
+                <p>
+                    Evaluate the selected heading using the wind
+                    actually observed during the target hour,
+                    and compare it with a persistence-based choice.
+                </p>
+            </li>
+        </ol>
+
+
+        <h2>How this extends my previous research</h2>
+
+        <p>
+            My previous project focused on predicting onshore winds
+            in South Barnegat Bay. This year's project investigating how wind forecasts
+            could inform  decisions for a water-quality drone to improve battery life.
+        </p>
+
+        <h2>Current limitations</h2>
+
+        <p class="research_notice">
+           The heading score is not a battery-consumption
+            model, and battery-efficiency improvements have not
+            been experimentally demonstrated. I do not have the buoy data yet.
+        </p>
+
+        <h2>Next stage of the research</h2>
+
+        <p>
+            After validating the data and forecasts, I plan to
+            replace demo headings with actual values from the
+             actual locations
+        </p>
+
+        <p>
+            Test and verify the effects of the model for the battery Efficiency
+        </p>
+
+        <p>
+            Further planned work includes integrating buoy
+            observations, investigating probabilistic forecasts,
+            and comparing the forecasting approach with
+            National Weather Service predictions and a
+            physically motivated model. These comparisons
+            are not implemented in the current replay.
+        </p>
     </div>
 </div>
 {% endblock %}

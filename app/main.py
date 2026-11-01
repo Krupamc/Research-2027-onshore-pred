@@ -55,7 +55,7 @@ def verify_api_key(x_api_key: str = Header(...)):
 
 # Main Page
 @app.get("/", response_class=HTMLResponse)
-def root(request: Request, session: db.SessionDep):
+def root(request: Request):
     return templates.TemplateResponse(request, "home.html", {"request": request})
 
 # Historical forcast
