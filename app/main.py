@@ -1,12 +1,43 @@
-from fastapi import FastAPI, HTTPException, Query, Header, Depends
+from fastapi import FastAPI, HTTPException, Query, Header, Depends, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse, RedirectResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.exception_handlers import http_exception_handler
+from fastapi.staticfiles import StaticFiles
 from typing import Annotated, Any
 from sqlmodel import select
 import database as db
 import config as cfg
 import models as model
+from pathlib import Path
 
-app = FastAPI(title="Buoy API")
+app = FastAPI(title="Onshore Wind Prediction and Wind Recommendations")
+# Open Parent dir
+BASE_DIR = Path(__file__).resolve().parent
 
+STATIC_DIR = BASE_DIR / "static"
+TEMPLATES_DIR = BASE_DIR / "templates"
+
+# Static and Templates
+templates = Jinja2Templates(directory=TEMPLATES_DIR)
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+# For any http error, send them to a specific error page
+@app.exception_handler(StarletteHTTPException)
+async def not_found(request: Request, exc: StarletteHTTPException):
+    # HTTP Errors
+    if exc.status_code == 404:
+        return templates.TemplateResponse(request, "404.html", {"request": request, "title": "404", "detail": exc.detail})
+    elif exc.status_code == 403:
+        return templates.TemplateResponse(request, "403.html", {"request": request, "title": "403", "detail": exc.detail})
+    elif exc.status_code == 401:
+        return templates.TemplateResponse(request, "401.html", {"request": request, "title": "401", "detail": exc.detail})
+    elif exc.status_code == 400:
+        return templates.TemplateResponse(request, "400.html", {"request": request, "title": "400", "detail": exc.detail})
+    elif exc.status_code == 500:
+        return templates.TemplateResponse(request, "500.html", {"request": request, "title": "500", "detail": exc.detail})
+    
+    return await http_exception_handler(request, exc)
 
 #--Actual Web--
 
@@ -20,9 +51,9 @@ def verify_api_key(x_api_key: str = Header(...)):
         raise HTTPException(status_code=401, detail="Invalid API Key ;-;")
 
 # Main Page
-@app.get("/")
-def root():
-    return {"status": "ok"}
+@app.get("/", response_class=HTMLResponse)
+def root(request: Request, session: db.SessionDep):
+    return templates.TemplateResponse(request, "home.html", {"request": request})
 
 # ---BUOY---
 

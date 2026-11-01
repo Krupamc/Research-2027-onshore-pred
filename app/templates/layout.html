@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        
+        <!-- Preconnect for fonts and style -->
+        <link rel="stylesheet" href="{{ url_for('static', path='/style.css?tesdt2') }}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+        <!-- Custom Font -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+        <style>
+            body {
+                font-family: "Roboto", sans-serif
+            }
+        </style>
+
+        <!-- Meta data... -->
+        <meta name="description" content="Onshore Wind Predictions">
+        <meta name="author" content="Krupam Patel">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!-- Title of page for social media. CVan match title tag or be more descriptive -->
+        <meta property="og:title" content="Onshore Wind Predictions">
+
+        <!-- Set for website for static sites or article for content-heavy -->
+        <meta property="og:type" content="website">
+
+        <!-- Url of an image that represents the page -->
+        <meta property="og:image" content="">
+        <meta property="og:image:alt" content="">
+
+        <!-- Favicon (Small image for browser preview ICO)-->
+        <link rel="icon" href="{{ url_for('static', path='/icons/favicon.ico') }}" sizes="any">
+        <link rel="icon" href="{{ url_for('static', path='/icons/icon.svg') }}" type="image/svg+xml">
+
+        <!-- Apple touch icon -->
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', path='/icons/icon.png') }}">
+
+        <!-- Web App Manifest-->
+        <link rel="manifest" href="{{ url_for('static', path='/site.webmanifest') }}">
+
+    </head>
+    <body>
+        <!-- Broswer title -->
+        <title>
+            {% if title %}
+                {{ title }} | Wind Predictions
+            {% else %}
+                Onshore Wind Predictions :D
+            {% endif %}
+        </title>
+    
+
+        
+    </body>
+</html>
