@@ -1,10 +1,33 @@
 {% extends "layout.html" %}
+
 {% block content %}
 <div class="main_container">
     <div class="main_page">
         <h1>Forecast-Informed Drone Heading Prototype</h1>
-        <p>Historical next-hour wind forcasts iand a wind-only ranking of demonstration travel headngs</p>
-        <p>Historical evalution quality is not 100%. Battery-saving, safety, and autonomous operation is not validated</p>
+
+        <p>
+            Explore how a next-hour wind forecast can be used to rank
+            demonstration travel headings for a future water-quality drone.
+        </p>
+
+        <p class="research_notice">
+            This is an unfinished research prototype. The data and
+            forecast results are still being checked. It does not
+            show battery savings.
+        </p>
+
+        <h2>How to use this demonstration</h2>
+
+        <ol>
+            <li>Select a historical target hour and load the example.</li>
+            <li>Compare the forecast wind with the observed wind.</li>
+            <li>Review the headings ranked using the forecast.</li>
+            <li>
+                Compare the selected heading with a persistence-based
+                choice using the wind actually observed.
+            </li>
+        </ol>
+
         <form action="/replay" method="get" class="replay_form">
             <div class="replay_field">
                 <label for="sample">Historical target hour</label>
@@ -24,26 +47,46 @@
             <button type="submit">Load example</button>
         </form>
 
-        <h2>Selected hour: {{ timestamp }}</h2>
+        <h2>Selected target hour: {{ timestamp }}</h2>
+
         <p>
             Timestamps use the source CSV's station-local time.
-            This is a historical replay, not current weather.
+            This is a replay of saved historical predictions,
+            not current weather (coming soon!)
         </p>
 
-        <h2>Wind forecast and observation</h2>
+        <h2>1. Forecast the wind</h2>
+
+        <p>
+            The forecasting pipeline uses the previous 24 hourly
+            weather observations to predict the following hour's
+            eastward and northward wind components (u and v for weather nerds). The table
+            displays those components as wind speed and direction.
+        </p>
+
+        <p>
+            This replay uses Ridge regression (similar to a linear refression). Naive Persistence (using the last value as the next) and an LSTM (Long-Short-Term-Memory Model)
+            are also included in the forecasting experiments.
+            Their inclusion does not establish that any model
+            is better until the data is validated.
+        </p>
+
         <div class="table_scroll">
             <table>
                 <thead>
                     <tr>
                         <th scope="col">Source</th>
                         <th scope="col">Speed (m/s)</th>
-                        <th scope="col">Direction from (degrees)</th>
+                        <th scope="col">Wind comes from (degrees)</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     <tr>
                         <th scope="row">Ridge forecast</th>
-                        <td>{{ "%.2f"|format(forecast.speed_ms) }}</td>
+                        <td>
+                            {{ "%.2f"|format(forecast.speed_ms) }}
+                        </td>
                         <td>
                             {% if forecast.from_deg is not none %}
                                 {{ "%.1f"|format(forecast.from_deg) }}
@@ -52,9 +95,12 @@
                             {% endif %}
                         </td>
                     </tr>
+
                     <tr>
                         <th scope="row">Observed</th>
-                        <td>{{ "%.2f"|format(observed.speed_ms) }}</td>
+                        <td>
+                            {{ "%.2f"|format(observed.speed_ms) }}
+                        </td>
                         <td>
                             {% if observed.from_deg is not none %}
                                 {{ "%.1f"|format(observed.from_deg) }}
@@ -67,65 +113,146 @@
             </table>
         </div>
 
-        <h2>Experimental heading ranking</h2>
+        <h2>2. Rank demonstration travel headings</h2>
 
         <p>
-            Bearings are clockwise from north. These are demonstration
-            choices, not verified paths toward sampling locations.
-            Equal scores are ties; list order breaks ties.
+            The decision layer uses the forecast wind to calculate
+            the opposing-wind component for each candidate heading.
+            Lower scores mean < predicted wind directly
+            opposing travel under this simplified calculation.
         </p>
-
-        <table>
-            <thead>
-                <tr>
-                    <th scope="col">Travel heading (degrees)</th>
-                    <th scope="col">Predicted opposing wind (m/s)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for option in ranking %}
-                <tr>
-                    <td>{{ "%.0f"|format(option.heading_deg) }}</td>
-                    <td>{{ "%.2f"|format(option.headwind_ms) }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <h2>Evaluate the selected headings</h2>
-
-        <table>
-            <thead>
-                <tr>
-                    <th scope="col">Policy</th>
-                    <th scope="col">Selected travel heading</th>
-                    <th scope="col">Observed opposing wind (m/s)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th scope="row">Ridge-based</th>
-                    <td>{{ "%.0f"|format(ridge_heading) }} degrees</td>
-                    <td>{{ "%.2f"|format(ridge_observed) }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Persistence-based</th>
-                    <td>
-                        {{ "%.0f"|format(persistence_heading) }} degrees
-                    </td>
-                    <td>
-                        {{ "%.2f"|format(persistence_observed) }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
 
         <p>
-            Lower opposing-wind scores do not establish lower battery
-            consumption. This calculation excludes currents, waves,
-            obstacles, return travel, and propulsion characteristics.
+            Wind direction describes <b>where the wind comes from.</b>
+            Travel heading describes where the drone would move.
+            Bearings are clockwise from north.
         </p>
-            </div>
+
+        <div class="table_scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">Travel heading (degrees)</th>
+                        <th scope="col">
+                            Predicted opposing wind (m/s)
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for option in ranking %}
+                    <tr>
+                        <td>
+                            {{ "%.0f"|format(option.heading_deg) }}
+                        </td>
+                        <td>
+                            {{ "%.2f"|format(option.headwind_ms) }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
 
+        <p>
+            These headings are example choices, not verified for the sampling locations. A score of zero means
+            no opposing component under this score. Does not mean no wind.
+        </p>
+
+        <p>
+            Multiple headings can tie. The first heading in the
+            supplied candidate list breaks ties, so the selected
+            heading is not necessarily preferable.
+        </p>
+
+        <h2>3. Evaluate the selected headings</h2>
+
+        <p>
+            Two policies choose from the same candidate headings.
+            The Ridge-based policy uses the model forecast.
+            The persistence-based policy assumes the next hour's
+            wind components will match the latest input hour.
+        </p>
+
+        <p>
+            Each policy's selected heading is then scored using
+            the wind actually observed during the target hour,
+            rather than the forecast that selected it.
+        </p>
+
+        <div class="table_scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">Policy</th>
+                        <th scope="col">
+                            Selected travel heading
+                        </th>
+                        <th scope="col">
+                            Observed opposing wind (m/s)
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <th scope="row">Ridge-based</th>
+                        <td>
+                            {{ "%.0f"|format(ridge_heading) }} degrees
+                        </td>
+                        <td>
+                            {{ "%.2f"|format(ridge_observed) }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Persistence-based</th>
+                        <td>
+                            {{ "%.0f"|format(persistence_heading) }}
+                            degrees
+                        </td>
+                        <td>
+                            {{ "%.2f"|format(persistence_observed) }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>
+            This table describes one historical example. A lower
+            observed score indicates less opposing wind for the
+            selected heading in that example, not proof of better
+            performance across all missions.
+        </p>
+
+        <h2>How this connects to the research</h2>
+
+        <p>
+            My previous project focused on local wind prediction.
+            This year's project investigates whether those predictions
+            can inform operating decisions for an autonomous
+            water-quality drone in Barnegat Bay.
+        </p>
+
+        <p>
+            This replay demonstrates the connection between a
+            forecast and a decision. Testing the battery-efficiency
+            hypothesis will require measured energy consumption
+            during comparable sampling missions.
+        </p>
+
+        <p class="research_notice">
+            This score is not a battery-consumption model or a
+            navigation instruction. It excludes currents, waves,
+            obstacles, sampling constraints, return travel, and
+            propulsion characteristics. Do not use this demonstration
+            to operate a real vehicle.
+        </p>
+
+        <a href="/" class="demo_link">
+            Read about the research
+        </a>
+    </div>
+</div>
 {% endblock %}

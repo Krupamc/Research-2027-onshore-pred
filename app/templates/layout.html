@@ -57,12 +57,12 @@
             <nav class="menu_bar" aria-label="Main navigation">
                 <!-- Logo link -->
                 <a href="/" class="logo_link">
-                    <img src="{{ url_for('static', path='/icons/logo.jpg') }}" alt="logo">
-                    <p>Wind Predictions</p>
+                    <!--<img src="{{ url_for('static', path='/icons/logo.jpg') }}" alt="logo">-->
+                    <p class="nav_links">Wind Predictions</p>
                 </a>
 
                 <div class="nav_links" id="main-nav-links"></div>
-                <a href="/research" class="nav_item {% if active_page == 'research' %}active{% endif %}">Independent Research</a>
+                <a href="/replay" class="nav_item {% if active_page == 'research' %}active{% endif %}">Historical Replay</a>
             </nav>
         </div>
         

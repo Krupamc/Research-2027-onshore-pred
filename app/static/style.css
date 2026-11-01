@@ -201,7 +201,7 @@ a {
 .research_notice {
     padding: 16px;
     background: var(--off-white);
-    border-radius: 4px;
+    border-radius: 16px;
 }
 
 .demo_link {
@@ -209,7 +209,7 @@ a {
     padding: 12px 20px;
     background: var(--primary-color);
     color: var(--text-color);
-    border-radius: 4px;
+    border-radius: 16px;
     transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
