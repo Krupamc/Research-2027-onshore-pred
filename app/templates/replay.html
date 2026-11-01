@@ -1,124 +1,128 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>Forecast-Informed Drone Heading Prototype</h1>
+<div class="main_container">
+    <div class="main_page">
+        <h1>Forecast-Informed Drone Heading Prototype</h1>
+        <p>Historical next-hour wind forcasts and a wind-only ranking of demonstration travel headings</p>
+        <p>Historical evalution quality is not 100%. Battery-saving, safety, and autonomous operation is not validated</p>
+        <form action="/replay" method="get">
+            <label for="sample">Historical target hour</label>
 
-<p>Historical next-hour wind forcasts and a wind-only ranking of demonstration travel headings</p>
-<p>Historical evalution quality is not 100%. Battery-saving, safety, and autonomous operation is not validated</p>
-<form action="/replay" method="get">
-    <label for="sample">Historical target hour</label>
+            <select id="sample" name="sample">
+                {% for option in options %}
+                <option
+                    value="{{ option.index }}"
+                    {% if option.index == sample %}selected{% endif %}
+                >
+                    {{ option.timestamp }}
+                </option>
+                {% endfor %}
+            </select>
 
-    <select id="sample" name="sample">
-        {% for option in options %}
-        <option
-            value="{{ option.index }}"
-            {% if option.index == sample %}selected{% endif %}
-        >
-            {{ option.timestamp }}
-        </option>
-        {% endfor %}
-    </select>
+            <button type="submit">Load example</button>
+        </form>
 
-    <button type="submit">Load example</button>
-</form>
+        <h2>Selected hour: {{ timestamp }}</h2>
+        <p>
+            Timestamps use the source CSV's station-local time.
+            This is a historical replay, not current weather.
+        </p>
 
-<h2>Selected hour: {{ timestamp }}</h2>
-<p>
-    Timestamps use the source CSV's station-local time.
-    This is a historical replay, not current weather.
-</p>
+        <h2>Wind forecast and observation</h2>
 
-<h2>Wind forecast and observation</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Source</th>
+                    <th scope="col">Speed (m/s)</th>
+                    <th scope="col">Direction from (degrees)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">Ridge forecast</th>
+                    <td>{{ "%.2f"|format(forecast.speed_ms) }}</td>
+                    <td>
+                        {% if forecast.from_deg is not none %}
+                            {{ "%.1f"|format(forecast.from_deg) }}
+                        {% else %}
+                            Undefined: calm
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Observed</th>
+                    <td>{{ "%.2f"|format(observed.speed_ms) }}</td>
+                    <td>
+                        {% if observed.from_deg is not none %}
+                            {{ "%.1f"|format(observed.from_deg) }}
+                        {% else %}
+                            Undefined: calm
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
-<table>
-    <thead>
-        <tr>
-            <th scope="col">Source</th>
-            <th scope="col">Speed (m/s)</th>
-            <th scope="col">Direction from (degrees)</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <th scope="row">Ridge forecast</th>
-            <td>{{ "%.2f"|format(forecast.speed_ms) }}</td>
-            <td>
-                {% if forecast.from_deg is not none %}
-                    {{ "%.1f"|format(forecast.from_deg) }}
-                {% else %}
-                    Undefined: calm
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">Observed</th>
-            <td>{{ "%.2f"|format(observed.speed_ms) }}</td>
-            <td>
-                {% if observed.from_deg is not none %}
-                    {{ "%.1f"|format(observed.from_deg) }}
-                {% else %}
-                    Undefined: calm
-                {% endif %}
-            </td>
-        </tr>
-    </tbody>
-</table>
+        <h2>Experimental heading ranking</h2>
 
-<h2>Experimental heading ranking</h2>
+        <p>
+            Bearings are clockwise from north. These are demonstration
+            choices, not verified paths toward sampling locations.
+            Equal scores are ties; list order breaks ties.
+        </p>
 
-<p>
-    Bearings are clockwise from north. These are demonstration
-    choices, not verified paths toward sampling locations.
-    Equal scores are ties; list order breaks ties.
-</p>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Travel heading (degrees)</th>
+                    <th scope="col">Predicted opposing wind (m/s)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for option in ranking %}
+                <tr>
+                    <td>{{ "%.0f"|format(option.heading_deg) }}</td>
+                    <td>{{ "%.2f"|format(option.headwind_ms) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-<table>
-    <thead>
-        <tr>
-            <th scope="col">Travel heading (degrees)</th>
-            <th scope="col">Predicted opposing wind (m/s)</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for option in ranking %}
-        <tr>
-            <td>{{ "%.0f"|format(option.heading_deg) }}</td>
-            <td>{{ "%.2f"|format(option.headwind_ms) }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        <h2>Evaluate the selected headings</h2>
 
-<h2>Evaluate the selected headings</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Policy</th>
+                    <th scope="col">Selected travel heading</th>
+                    <th scope="col">Observed opposing wind (m/s)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">Ridge-based</th>
+                    <td>{{ "%.0f"|format(ridge_heading) }} degrees</td>
+                    <td>{{ "%.2f"|format(ridge_observed) }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Persistence-based</th>
+                    <td>
+                        {{ "%.0f"|format(persistence_heading) }} degrees
+                    </td>
+                    <td>
+                        {{ "%.2f"|format(persistence_observed) }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
-<table>
-    <thead>
-        <tr>
-            <th scope="col">Policy</th>
-            <th scope="col">Selected travel heading</th>
-            <th scope="col">Observed opposing wind (m/s)</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <th scope="row">Ridge-based</th>
-            <td>{{ "%.0f"|format(ridge_heading) }} degrees</td>
-            <td>{{ "%.2f"|format(ridge_observed) }}</td>
-        </tr>
-        <tr>
-            <th scope="row">Persistence-based</th>
-            <td>
-                {{ "%.0f"|format(persistence_heading) }} degrees
-            </td>
-            <td>
-                {{ "%.2f"|format(persistence_observed) }}
-            </td>
-        </tr>
-    </tbody>
-</table>
+        <p>
+            Lower opposing-wind scores do not establish lower battery
+            consumption. This calculation excludes currents, waves,
+            obstacles, return travel, and propulsion characteristics.
+        </p>
+            </div>
+        </div>
 
-<p>
-    Lower opposing-wind scores do not establish lower battery
-    consumption. This calculation excludes currents, waves,
-    obstacles, return travel, and propulsion characteristics.
-</p>
 {% endblock %}
