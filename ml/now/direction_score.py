@@ -1,8 +1,8 @@
 import numpy as np
 
 def rank_headings(u, v, headings):
-    # u: predited eastward wind component m/s 
-    # v: northward...
+    # u: predicted eastward wind component, m/s
+    # v: predicted northward wind component, m/s
     # headings: allowed travel bearings clockwise from north
     if not np.isfinite([u, v]).all():
         raise ValueError("Wind components must be finite.")
@@ -11,6 +11,7 @@ def rank_headings(u, v, headings):
         raise ValueError("Provide at least one allowed heading.")
 
     results = []
+
     for heading in headings:
         heading = float(heading) % 360
         angle = np.deg2rad(heading)
@@ -27,4 +28,4 @@ def rank_headings(u, v, headings):
             "along_wind_ms": float(along_wind),
         })
 
-        return sorted(results, key=lambda row: row["headwind_ms"])
+    return sorted(results, key=lambda row: row["headwind_ms"])
