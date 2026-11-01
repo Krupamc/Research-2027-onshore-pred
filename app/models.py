@@ -55,7 +55,7 @@ class BuoyPacketPublic(SQLModel):
 
 # Base Model (Parent)
 class WUndergroundBase(SQLModel):
-    station_id: str = Field(index=True, unique=True)
+    station_id: str = Field(index=True)
     time: datetime
     temp: float | None
     dew: float | None
